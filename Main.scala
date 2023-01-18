@@ -1,37 +1,31 @@
-import org.http4s.server.Server
-@main
-def test(): Unit = {
-  println("test")
-}
 
-@main
-def server(): Unit = {
-  import cats.effect._, org.http4s._, org.http4s.dsl.io._
-  import cats.effect.unsafe.IORuntime
-  implicit val runtime: IORuntime = cats.effect.unsafe.IORuntime.global
 
-import cats.syntax.all._
+
+import cats.effect._
 import com.comcast.ip4s._
-import org.http4s.ember.server._
+import org.http4s.HttpRoutes
+import org.http4s.dsl.io._
 import org.http4s.implicits._
-import org.http4s.server.Router
-import scala.concurrent.duration._
-    
+import org.http4s.ember.server._
+
+object Main extends IOApp {
   val helloWorldService = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name =>
       Ok(s"Hello, $name.")
-  }
+  }.orNotFound
 
-  val httpApp = Router("/" -> helloWorldService).orNotFound
+  def run(args: List[String]): IO[ExitCode] =
+    EmberServerBuilder
+      .default[IO]
+      .withHost(ipv4"0.0.0.0")
+      .withPort(port"8080")
+      .withHttpApp(helloWorldService)
+      .build
+      .use(_ => IO.never)
+      .as(ExitCode.Success)
+}
 
-  val server: Resource[cats.effect.IO, Server] = EmberServerBuilder
-    .default[IO]
-    .withHost(ipv4"0.0.0.0")
-    .withPort(port"8080")
-    .withHttpApp(httpApp)
-    .build
-
-  val shutdown = server.allocated.unsafeRunSync()._2
-
-      while (true) {}
+@main
+def test(): Unit = {
+  println("test")
 }
