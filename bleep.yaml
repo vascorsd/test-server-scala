@@ -1,0 +1,39 @@
+$schema: https://raw.githubusercontent.com/oyvindberg/bleep/master/schema.json
+$version: 0.0.3
+
+projects:
+  cli:
+    cross:
+      jvm:
+        platform:
+          name: jvm
+
+      native-fast:
+        platform:
+          name: native
+          nativeVersion: 0.4.17
+          nativeMode: debug
+          nativeGc: immix
+
+      native-release:
+        platform:
+          name: native
+          nativeVersion: 0.4.17
+          nativeMode: release
+          nativeGc: immix
+
+    platform:
+      mainClass: Main
+
+    scala:
+      version: 3.3.3
+      strict: true
+
+    dependencies:
+      - org.typelevel::cats-core:2.10.0
+      - org.typelevel::cats-effect:3.5.4
+      - co.fs2::fs2-core:3.10.2
+      - co.fs2::fs2-io:3.10.2
+      - org.http4s::http4s-dsl:0.23.26
+      - org.http4s::http4s-ember-server:0.23.26
+      - org.http4s::http4s-ember-client:0.23.26
